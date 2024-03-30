@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <style>
+        #panorama {
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="panorama"></div>
+    <!-- <script src="data.js"></script> -->
+    <script src="tour.js"></script>
+    <script>
+        function createScenes(data, id) {
+            const filteredData = data.find((item) => Object.keys(item.data).includes(id));
+
+            if (!filteredData) {
+                console.error(`Data for ID '${id}' not found.`);
+                return;
+            }
+
+            const scenes = filteredData.data[id]
+                .map(({ sceneId, title, hfov, yaw, pitch, panorama, hotSpots }) => ({
+                    [sceneId]: {
+                        title,
+                        hfov,
+                        yaw,
+                        pitch,
+                        type: "equirectangular",
+                        panorama,
+                        hotSpots,
+                    },
+                }))
+                .reduce((acc, scene) => ({ ...acc, ...scene }), {});
+
+            const firstScene = filteredData.data[id][0].sceneId;
+
+            pannellum.viewer("panorama", {
+                default: {
+                    firstScene,
+                    sceneFadeDuration: 1000,
+                },
+                scenes,
+            });
+        }
+
+        async function initTour() {
+            // console.log(getSceneData());
+            createScenes(Data, "peter"); // -> pass your id here
+        }
+
+        initTour();
+    </script>
+    <!-- <script src="data.js" defer></script> -->
+
+</body>
+
+</html>
